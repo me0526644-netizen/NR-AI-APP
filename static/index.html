@@ -1,12 +1,304 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NR AI</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b18">
+<title>NR AI</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#090b18;
+ color:white;
+ font-family:Arial,sans-serif;
+ padding-bottom:85px;
+}
+header{
+ padding:22px 20px;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+}
+.logo{
+ font-size:27px;
+ font-weight:900;
+ letter-spacing:1px;
+ background:linear-gradient(90deg,#9d7cff,#39d5ff);
+ color:transparent;
+ background-clip:text;
+}
+.profile{
+ width:42px;height:42px;border-radius:50%;
+ background:linear-gradient(135deg,#805cff,#18cfff);
+ display:grid;place-items:center;font-weight:bold;
+}
+.container{padding:12px 18px}
+.welcome{
+ background:linear-gradient(135deg,#29205a,#102c55);
+ border:1px solid #51418a;
+ border-radius:22px;
+ padding:24px 20px;
+ margin-bottom:25px;
+}
+.welcome small{color:#b8b4ff}
+.welcome h1{font-size:28px;margin:12px 0}
+.welcome p{color:#c5c8dc;font-size:14px;line-height:1.6}
+.badge{
+ display:inline-block;
+ background:#ffffff20;
+ padding:7px 12px;
+ border-radius:20px;
+ font-size:11px;
+}
+.section-title{
+ font-size:19px;
+ font-weight:bold;
+ margin:25px 0 15px;
+}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:13px;
+}
+.card{
+ background:#151a2d;
+ border:1px solid #292f4c;
+ border-radius:18px;
+ padding:18px 15px;
+ min-height:140px;
+ cursor:pointer;
+ transition:.2s;
+}
+.card:active{transform:scale(.96)}
+.icon{font-size:30px;margin-bottom:12px}
+.card h3{font-size:15px;margin:5px 0}
+.card p{font-size:11px;color:#9da5c1;line-height:1.5}
+.blue{border-top:3px solid #35baff}
+.purple{border-top:3px solid #a47aff}
+.pink{border-top:3px solid #ff72bc}
+.green{border-top:3px solid #45dfaa}
+.orange{border-top:3px solid #ffb45f}
+.panel{
+ display:none;
+ background:#151a2d;
+ border:1px solid #343b5d;
+ border-radius:20px;
+ padding:20px;
+ margin-top:20px;
+}
+.panel.active{display:block}
+.panel h2{margin-top:0}
+input,textarea,select{
+ width:100%;
+ padding:14px;
+ margin:9px 0;
+ background:#090f20;
+ border:1px solid #343b5d;
+ color:white;
+ border-radius:12px;
+ font-size:14px;
+}
+textarea{min-height:100px;resize:vertical}
+button{
+ border:0;
+ padding:14px;
+ border-radius:12px;
+ background:linear-gradient(90deg,#805cff,#268fff);
+ color:white;
+ font-weight:bold;
+ width:100%;
+ margin-top:10px;
+}
+.back{
+ background:#252c46;
+ margin-bottom:18px;
+}
+.result{
+ white-space:pre-wrap;
+ color:#cbd4f5;
+ font-size:13px;
+ line-height:1.6;
+ margin-top:15px;
+}
+nav{
+ position:fixed;
+ bottom:0;left:0;right:0;
+ background:#111629;
+ border-top:1px solid #303653;
+ display:flex;
+ justify-content:space-around;
+ padding:13px 5px;
+}
+nav div{text-align:center;font-size:11px;color:#aeb7d5}
+nav span{display:block;font-size:21px;margin-bottom:4px}
+footer{text-align:center;color:#66708d;font-size:11px;margin:30px}
+</style>
 </head>
+
 <body>
-  <h1>NR AI</h1>
-  <p>Selamat datang di NR AI.</p>
+
+<header>
+ <div class="logo">✦ NR AI</div>
+ <div class="profile">NR</div>
+</header>
+
+<main class="container">
+
+<section id="home">
+ <div class="welcome">
+  <span class="badge">✦ AI STUDIO</span>
+  <h1>Halo, Kreator! 👋</h1>
+  <p>Selamat datang di NR AI. Wujudkan ide, buat gambar, video, musik, dan temukan kreativitas tanpa batas.</p>
+ </div>
+
+ <div class="section-title">✦ Apa yang ingin kamu buat?</div>
+
+ <div class="grid">
+  <div class="card blue" onclick="openTool('chat')">
+   <div class="icon">💬</div>
+   <h3>Chat AI</h3>
+   <p>Asisten pintar untuk menjawab pertanyaan.</p>
+  </div>
+
+  <div class="card purple" onclick="openTool('image')">
+   <div class="icon">🎨</div>
+   <h3>AI Image</h3>
+   <p>Buat gambar dari imajinasimu.</p>
+  </div>
+
+  <div class="card pink" onclick="openTool('video')">
+   <div class="icon">🎬</div>
+   <h3>AI Video</h3>
+   <p>Wujudkan ide menjadi video.</p>
+  </div>
+
+  <div class="card green" onclick="openTool('music')">
+   <div class="icon">🎵</div>
+   <h3>AI Music</h3>
+   <p>Ciptakan lagu dan musik sendiri.</p>
+  </div>
+
+  <div class="card orange" onclick="openTool('voice')">
+   <div class="icon">🎙️</div>
+   <h3>AI Voice</h3>
+   <p>Ubah teks menjadi suara.</p>
+  </div>
+
+  <div class="card blue" onclick="openTool('vision')">
+   <div class="icon">📷</div>
+   <h3>AI Vision</h3>
+   <p>Analisis foto dan gambar.</p>
+  </div>
+
+  <div class="card purple" onclick="openTool('writer')">
+   <div class="icon">✍️</div>
+   <h3>AI Writer</h3>
+   <p>Buat cerita, artikel dan lirik.</p>
+  </div>
+
+  <div class="card pink" onclick="openTool('history')">
+   <div class="icon">🗂️</div>
+   <h3>Riwayat</h3>
+   <p>Lihat aktivitas kreativitasmu.</p>
+  </div>
+ </div>
+</section>
+
+<section id="tool" class="panel">
+ <button class="back" onclick="goHome()">← Kembali ke Dashboard</button>
+ <h2 id="toolTitle">NR AI</h2>
+ <p id="toolDescription" style="color:#aab4d0;font-size:13px"></p>
+ <div id="toolContent"></div>
+</section>
+
+<footer>NR AI © 2026 · Your Imagination, Powered by AI</footer>
+</main>
+
+<nav>
+ <div onclick="goHome()"><span>⌂</span>Beranda</div>
+ <div onclick="openTool('chat')"><span>💬</span>Chat</div>
+ <div onclick="openTool('image')"><span>🎨</span>Gambar</div>
+ <div onclick="openTool('video')"><span>🎬</span>Video</div>
+ <div onclick="openTool('music')"><span>🎵</span>Musik</div>
+</nav>
+
+<script>
+const tools={
+ chat:{
+  title:"💬 Chat AI",
+  desc:"Bicaralah dengan asisten NR AI.",
+  content:`<textarea id="prompt" placeholder="Tulis pertanyaanmu..."></textarea>
+  <button onclick="demo()">Kirim Pertanyaan</button>`
+ },
+ image:{
+  title:"🎨 AI Image Generator",
+  desc:"Ceritakan gambar yang ingin kamu buat.",
+  content:`<textarea id="prompt" placeholder="Contoh: Kota futuristik saat matahari terbenam..."></textarea>
+  <button onclick="demo()">Buat Gambar</button>`
+ },
+ video:{
+  title:"🎬 AI Video Generator",
+  desc:"Buat konsep video dari deskripsi.",
+  content:`<textarea id="prompt" placeholder="Deskripsikan video yang kamu inginkan..."></textarea>
+  <select id="style"><option>Realistis</option><option>Sinematik</option><option>Animasi</option></select>
+  <button onclick="demo()">Buat Video</button>`
+ },
+ music:{
+  title:"🎵 AI Music Generator",
+  desc:"Rancang lagu sesuai keinginanmu.",
+  content:`<input id="prompt" placeholder="Judul atau tema lagu">
+  <select id="style"><option>Pop</option><option>Rock</option><option>Dangdut</option><option>Hip Hop</option><option>Jazz</option><option>EDM</option></select>
+  <textarea id="lyrics" placeholder="Masukkan lirik lagu atau ide ceritanya..."></textarea>
+  <button onclick="demo()">Buat Lagu</button>`
+ },
+ voice:{
+  title:"🎙️ AI Voice",
+  desc:"Ubah tulisan menjadi suara.",
+  content:`<textarea id="prompt" placeholder="Masukkan teks yang ingin dibacakan..."></textarea>
+  <button onclick="demo()">Proses Suara</button>`
+ },
+ vision:{
+  title:"📷 AI Vision",
+  desc:"Siapkan foto untuk dianalisis.",
+  content:`<input type="file" accept="image/*">
+  <textarea id="prompt" placeholder="Apa yang ingin kamu ketahui dari foto?"></textarea>
+  <button onclick="demo()">Analisis Foto</button>`
+ },
+ writer:{
+  title:"✍️ AI Writer",
+  desc:"Buat tulisan dengan bantuan AI.",
+  content:`<textarea id="prompt" placeholder="Tuliskan ide atau topik..."></textarea>
+  <button onclick="demo()">Buat Tulisan</button>`
+ },
+ history:{
+  title:"🗂️ Riwayat",
+  desc:"Riwayat penggunaan akan tersedia setelah fitur AI dihubungkan.",
+  content:`<p>Belum ada riwayat aktivitas.</p>`
+ }
+};
+
+function openTool(name){
+ const t=tools[name];
+ document.getElementById('home').style.display='none';
+ document.getElementById('tool').classList.add('active');
+ document.getElementById('toolTitle').innerText=t.title;
+ document.getElementById('toolDescription').innerText=t.desc;
+ document.getElementById('toolContent').innerHTML=t.content;
+ window.scrollTo(0,0);
+}
+
+function goHome(){
+ document.getElementById('home').style.display='block';
+ document.getElementById('tool').classList.remove('active');
+ window.scrollTo(0,0);
+}
+
+function demo(){
+ alert("Tampilan NR AI sudah siap! Mesin AI perlu dihubungkan agar bisa menghasilkan jawaban, gambar, video, dan musik sungguhan.");
+}
+</script>
+
 </body>
 </html>
