@@ -1,10 +1,7 @@
-name: Build NR AI APK
+name: NR AI APK - Explicit JSON Config
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   build:
@@ -13,7 +10,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -27,16 +24,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Install TypeScript
-        run: npm install --save-dev typescript
+      - name: Create JSON Capacitor config and verify
+        run: |
+          rm -f capacitor.config.ts capacitor.config.js capacitor.config.mjs
+          cat > capacitor.config.json <<'EOF'
+          {
+            "appId": "com.nrai.app",
+            "appName": "NR AI",
+            "webDir": "static"
+          }
+          EOF
+          echo "---- Capacitor config files ----"
+          ls -la capacitor.config.*
+          test ! -f capacitor.config.ts
 
-      - name: Add Android platform
-        run: npx cap add android
+      - name: Add Android platform using JSON config explicitly
+        run: npx cap add android --config capacitor.config.json
 
-      - name: Sync Android
-        run: npx cap sync android
+      - name: Sync Android using JSON config explicitly
+        run: npx cap sync android --config capacitor.config.json
 
-      - name: Build APK
+      - name: Build debug APK
         run: |
           cd android
           chmod +x gradlew
@@ -48,3 +56,4 @@ jobs:
           name: NR-AI-debug-APK
           path: android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+          
