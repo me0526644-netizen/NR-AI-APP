@@ -1,55 +1,76 @@
 import os
 import httpx
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-OLLAMA_URL = os.getenv("OLLAMA_URL", "http://localhost:11434")
-OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "qwen2.5:3b")
-app = FastAPI(title="NR AI API", version="0.2.0")
+app = FastAPI(title="NR AI API")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_MODEL = "gemini-3.8-flash"
 
 class ChatRequest(BaseModel):
     message: str = Field(min_length=1, max_length=8000)
 
 @app.get("/api/health")
 async def health():
-    available = False
-    try:
-        async with httpx.AsyncClient(timeout=3) as client:
-            r = await client.get(f"{OLLAMA_URL}/api/tags")
-            available = r.status_code == 200
-    except Exception:
-        pass
-    return {"ok": True, "ollama": available, "model": OLLAMA_MODEL}
+    return {
+        "ok": True,
+        "gemini_configured": bool(GEMINI_API_KEY)
+    }
 
 @app.post("/api/chat")
 async def chat(req: ChatRequest):
-    try:
-        async with httpx.AsyncClient(timeout=180) as client:
-            r = await client.post(
-                f"{OLLAMA_URL}/api/chat",
-                json={
-                    "model": OLLAMA_MODEL,
-                    "messages": [
-                        {"role": "system", "content": "Kamu adalah NR AI, asisten AI yang ramah. Jawab dalam bahasa yang digunakan pengguna; utamakan bahasa Indonesia."},
-                        {"role": "user", "content": req.message}
-                    ],
-                    "stream": False
-                }
-            )
-            r.raise_for_status()
-            data = r.json()
-            return {"reply": data.get("message", {}).get("content", "Tidak ada jawaban dari model.")}
-    except httpx.ConnectError:
-        raise HTTPException(status_code=503, detail="Ollama tidak aktif. Jalankan Ollama dan unduh model terlebih dahulu.")
-    except httpx.HTTPStatusError as e:
-        raise HTTPException(status_code=502, detail=f"Ollama mengembalikan status {e.response.status_code}. Pastikan model sudah diunduh.")
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Gagal memproses permintaan: {str(e)}")
+    if not GEMINI_API_KEY:
+        raise HTTPException(
+            status_code=503,
+            detail="Gemini API key belum dikonfigurasi."
+        )
 
-@app.get("/")
-async def home():
-    return FileResponse("static/index.html")
+    url = (
+        "https://generativelanguage.googleapis.com/v1beta/"
+        f"models/{GEMINI_MODEL}:generateContent"
+    )
+
+    headers = {
+        "x-goog-api-key": GEMINI_API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "systemInstruction": {
+            "parts": [{
+                "text": "Kamu adalah NR AI, asisten yang ramah. "
+                        "Utamakan bahasa Indonesia."
+            }]
+        },
+        "contents": [{
+            "parts": [{"text": req.message}]
+        }]
+    }
+
+    try:
+        async with httpx.AsyncClient(timeout=120) as client:
+            response = await client.post(
+                url,
+                headers=headers,
+                json=payload
+            )
+            response.raise_for_status()
+            data = response.json()
+
+        reply = data["candidates"][0]["content"]["parts"][0]["text"]
+        return {"reply": reply}
+
+    except httpx.HTTPStatusError as e:
+        raise HTTPException(
+            status_code=502,
+            detail=f"Gemini mengalami error HTTP {e.response.status_code}."
+        )
+    except Exception:
+        raise HTTPException(
+            status_code=500,
+            detail="NR AI gagal memproses permintaan."
+        )
 
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
